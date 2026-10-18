@@ -29,10 +29,57 @@ visible and asks reviewers to verify predictions before acting.
 
 This screenshot was captured from a real local request to the base
 `Qwen/Qwen2.5-1.5B-Instruct` model. The displayed 4,373 ms is one request's
-observed latency, not a performance benchmark. No LoRA adapter has been trained
-and no reviewed held-out evaluation has been run, so accuracy and improvement
-figures are **not measured**. The example output is a demonstration, not evidence
-of model accuracy.
+observed latency, not a performance benchmark. No LoRA adapter has been trained.
+The screenshot's example output is a demonstration, not evidence of model accuracy.
+
+## Baseline benchmark
+
+The fixed [`data/benchmark.jsonl`](data/benchmark.jsonl) suite contains 30
+synthetic bug reports with expected labels checked against the documented
+labeling policy. It exercises all seven output fields. These are policy
+regression cases, **not real incident reports or an independently
+human-reviewed held-out dataset**; their results do not establish real-world
+accuracy or fine-tuning improvement.
+
+To run the benchmark against the local base model, first start the API as
+described above, then run:
+
+```powershell
+.\.venv\Scripts\python.exe training\benchmark.py
+```
+
+The runner sends every report through the API's base-model inference path,
+prints field-level accuracy and exact-match metrics, and saves predictions to
+[`docs/benchmark-results.json`](docs/benchmark-results.json). The result file
+records the model name, completion time, expected and predicted labels, and
+per-request latency. A benchmark score is meaningful only together with this
+suite definition and its synthetic-data limitation. There are no LoRA results
+or claims of improvement until a reviewed, held-out real-world evaluation has
+been completed.
+
+### Recorded baseline
+
+Measured on 2026-10-18 with the local base model
+`Qwen/Qwen2.5-1.5B-Instruct`, through the running Bug2JSON API:
+
+| Metric | Result |
+| --- | ---: |
+| Synthetic policy cases | 30 |
+| Schema-valid API responses | 30/30 (100.0%) |
+| Category accuracy | 12/30 (40.0%) |
+| Category macro-F1 | 0.3439 |
+| Severity accuracy | 6/30 (20.0%) |
+| Priority accuracy | 7/30 (23.3%) |
+| Environment exact match | 23/30 (76.7%) |
+| Reproducibility accuracy | 29/30 (96.7%) |
+| All seven fields exact match | 0/30 (0.0%) |
+
+The per-field score uses exact string matching, including for free-text cause
+and action; it does not measure their semantic usefulness. These results show
+this baseline's performance on the fixed synthetic policy suite only. They are
+not real-world accuracy, a fine-tuning comparison, or evidence of improvement.
+The complete case-by-case predictions are in
+[`docs/benchmark-results.json`](docs/benchmark-results.json).
 
 ## Project layout
 
@@ -41,7 +88,9 @@ of model accuracy.
 - `data/`: illustrative examples and labeling policy
 - `training/`: group-safe data preparation, LoRA SFT, and base-vs-adapter evaluation
 
-Bundled examples are synthetic and marked `reviewed: false`. They are examples of the data format, not training truth. The preparation script excludes them.
+Bundled examples and benchmark cases are synthetic, separate from reviewed
+training data, and not evidence of real-world accuracy. The training preparation
+script only accepts human-reviewed rows and excludes them.
 
 ## Run locally
 

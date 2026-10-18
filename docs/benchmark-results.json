@@ -1,0 +1,784 @@
+{
+  "benchmark": "Bug2JSON synthetic policy benchmark",
+  "benchmark_file": "data\\benchmark.jsonl",
+  "model_name": "Qwen/Qwen2.5-1.5B-Instruct",
+  "mode": "base",
+  "completed_at_utc": "2026-10-18T17:53:56.729591+00:00",
+  "metrics": {
+    "examples": 30,
+    "schema_validity": 1.0,
+    "category_macro_f1": 0.343859649122807,
+    "field_exact_match": {
+      "category": 0.4,
+      "severity": 0.2,
+      "priority": 0.23333333333333334,
+      "environment": 0.7666666666666667,
+      "reproducible": 0.9666666666666667,
+      "probable_cause": 0.0,
+      "suggested_action": 0.0
+    },
+    "all_fields_exact_match": 0.0,
+    "manual_review_required": [
+      "unsupported claims",
+      "probable-cause usefulness",
+      "suggested-action usefulness"
+    ],
+    "category_accuracy": 0.4,
+    "severity_accuracy": 0.2,
+    "priority_accuracy": 0.23333333333333334,
+    "environment_accuracy": 0.7666666666666667,
+    "reproducibility_accuracy": 0.9666666666666667
+  },
+  "cases": [
+    {
+      "group_id": "login-loading",
+      "input": "Whenever I enter the wrong password, the login form spins and never returns an error. Refreshing fixes it until the next attempt.",
+      "expected": {
+        "category": "authentication",
+        "severity": "medium",
+        "priority": "P2",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The failed-login path may leave the loading state active.",
+        "suggested_action": "Inspect failed-login handling and verify the loading state is reset."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "Incorrect password input triggers infinite loop.",
+        "suggested_action": "Implement proper error handling for invalid passwords."
+      },
+      "exact_match": false,
+      "elapsed_ms": 11968,
+      "error": null
+    },
+    {
+      "group_id": "firefox-session",
+      "input": "On Firefox, signing in with a valid account always shows 'session expired' even though the password is correct.",
+      "expected": {
+        "category": "authentication",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "Firefox",
+        "reproducible": true,
+        "probable_cause": "Session validation may reject valid credentials in this browser.",
+        "suggested_action": "Inspect authentication and session-validation logs for the failed sign-in."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "Firefox",
+        "reproducible": true,
+        "probable_cause": "Session expiration logic might not correctly handle valid credentials.",
+        "suggested_action": "Review session expiration logic to ensure it properly handles valid passwords."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7557,
+      "error": null
+    },
+    {
+      "group_id": "reset-email",
+      "input": "I cannot reproduce the password reset email issue now; it worked yesterday on Windows 11.",
+      "expected": {
+        "category": "authentication",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "Windows 11",
+        "reproducible": false,
+        "probable_cause": "The earlier email-delivery failure may have been transient.",
+        "suggested_action": "Check password-reset delivery logs around the reported failure time."
+      },
+      "prediction": {
+        "category": "security",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "Windows 11",
+        "reproducible": false,
+        "probable_cause": "Password reset functionality might have been updated or disabled.",
+        "suggested_action": "Check if there are any recent changes to the password reset process."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7235,
+      "error": null
+    },
+    {
+      "group_id": "android-signout",
+      "input": "Every attempt to sign out on Android 14 returns to the account page, so I remain signed in.",
+      "expected": {
+        "category": "authentication",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "Android 14",
+        "reproducible": true,
+        "probable_cause": "The sign-out flow may not clear the active session.",
+        "suggested_action": "Inspect the sign-out response and confirm session credentials are cleared."
+      },
+      "prediction": {
+        "category": "security",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "Android 14",
+        "reproducible": true,
+        "probable_cause": "Sign-out functionality might not properly handle logout requests.",
+        "suggested_action": "Test logout behavior across various scenarios to identify if there's a specific condition causing the issue."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6820,
+      "error": null
+    },
+    {
+      "group_id": "tablet-navigation",
+      "input": "The navigation drawer overlaps the page title on an iPad when the screen is narrow.",
+      "expected": {
+        "category": "ui",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "iPad",
+        "reproducible": "unknown",
+        "probable_cause": "The narrow-screen layout may not reserve space for the navigation drawer.",
+        "suggested_action": "Inspect responsive layout rules at the reported tablet viewport."
+      },
+      "prediction": {
+        "category": "ui",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "iPad",
+        "reproducible": "unknown",
+        "probable_cause": "Navigation drawer layout might not adjust properly for narrow screens.",
+        "suggested_action": "Review and update the navigation drawer's responsive design for narrower screens."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7187,
+      "error": null
+    },
+    {
+      "group_id": "dark-settings",
+      "input": "Whenever I select dark mode in Safari, the settings panel stays white.",
+      "expected": {
+        "category": "ui",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "Safari",
+        "reproducible": true,
+        "probable_cause": "The settings panel may not apply the selected theme state.",
+        "suggested_action": "Inspect theme propagation to the settings panel in Safari."
+      },
+      "prediction": {
+        "category": "ui",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "Safari",
+        "reproducible": true,
+        "probable_cause": "Settings panel color theme setting is not applied correctly.",
+        "suggested_action": "Check and update the UI rendering logic related to dark mode settings."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7357,
+      "error": null
+    },
+    {
+      "group_id": "checkout-spacing",
+      "input": "The submit button is too close to the form label on the checkout page.",
+      "expected": {
+        "category": "ui",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The form spacing may be insufficient.",
+        "suggested_action": "Review spacing between the checkout label and submit button."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "checkout page",
+        "reproducible": "unknown",
+        "probable_cause": "Form layout design issue causing button proximity to label.",
+        "suggested_action": "Review and adjust form layout to ensure proper spacing between elements."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6200,
+      "error": null
+    },
+    {
+      "group_id": "modal-close",
+      "input": "On Chrome 129, the modal covers the close icon and I cannot dismiss it without refreshing.",
+      "expected": {
+        "category": "ui",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "Chrome 129",
+        "reproducible": "unknown",
+        "probable_cause": "The modal may be positioned above its close control.",
+        "suggested_action": "Inspect modal stacking and close-control positioning in Chrome 129."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "Chrome 129",
+        "reproducible": "unknown",
+        "probable_cause": "Modal cover affects accessibility features.",
+        "suggested_action": "Review modal design for accessibility compliance."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7246,
+      "error": null
+    },
+    {
+      "group_id": "orders-pagination",
+      "input": "Whenever I request /api/orders with an invalid page number, the service returns a raw stack trace instead of a client error.",
+      "expected": {
+        "category": "api",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The endpoint may not validate pagination parameters before processing them.",
+        "suggested_action": "Review pagination validation and error-response handling for the orders endpoint."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "Invalid input handling logic for page numbers.",
+        "suggested_action": "Review and update the API's input validation rules."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7297,
+      "error": null
+    },
+    {
+      "group_id": "inventory-outage",
+      "input": "All users receive HTTP 503 from the inventory API, and the entire service is unavailable with no workaround.",
+      "expected": {
+        "category": "api",
+        "severity": "critical",
+        "priority": "P1",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The inventory service may be unavailable or failing its upstream dependency.",
+        "suggested_action": "Check inventory service health and upstream dependency status immediately."
+      },
+      "prediction": {
+        "category": "other",
+        "severity": "critical",
+        "priority": "P1",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "HTTP 503 error indicates service unavailability.",
+        "suggested_action": "Check inventory API health and ensure proper logging."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6594,
+      "error": null
+    },
+    {
+      "group_id": "optional-field-api",
+      "input": "The API documentation says this field is optional, but sending a request without it always returns HTTP 400.",
+      "expected": {
+        "category": "api",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "Request validation may incorrectly require the documented optional field.",
+        "suggested_action": "Compare the endpoint schema with its request-validation rules."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "Documentation error indicating the field is required.",
+        "suggested_action": "Update the API documentation to reflect that the field is mandatory."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6677,
+      "error": null
+    },
+    {
+      "group_id": "duplicate-note",
+      "input": "Each time I save an order note, the database stores the same note twice.",
+      "expected": {
+        "category": "database",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The save operation may be executed more than once without duplicate protection.",
+        "suggested_action": "Inspect write-call counts and idempotency handling for order notes."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "database",
+        "reproducible": true,
+        "probable_cause": "Order notes are being saved directly into the database instead of through a proper API endpoint.",
+        "suggested_action": "Implement a middleware that validates incoming requests before saving them to the database."
+      },
+      "exact_match": false,
+      "elapsed_ms": 8610,
+      "error": null
+    },
+    {
+      "group_id": "customer-search-index",
+      "input": "The customer search query fails with a missing index error whenever the last-name filter is used.",
+      "expected": {
+        "category": "database",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The query may reference an index that is absent from the database.",
+        "suggested_action": "Check the deployed indexes and the query plan for the last-name filter."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The last-name filter requires an index that is not present.",
+        "suggested_action": "Add the required index to resolve the missing index error."
+      },
+      "exact_match": false,
+      "elapsed_ms": 9822,
+      "error": null
+    },
+    {
+      "group_id": "address-data-loss",
+      "input": "Customer addresses were permanently deleted for every account during yesterday's migration; no restore is available.",
+      "expected": {
+        "category": "database",
+        "severity": "critical",
+        "priority": "P1",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The migration may have removed address records without preserving them.",
+        "suggested_action": "Stop further migrations and assess backups and data-recovery options."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "Migration process did not properly validate customer addresses.",
+        "suggested_action": "Review and update migration scripts to include address validation checks."
+      },
+      "exact_match": false,
+      "elapsed_ms": 8268,
+      "error": null
+    },
+    {
+      "group_id": "slow-annual-report",
+      "input": "The report page takes about 25 seconds to load when it contains a year's worth of results.",
+      "expected": {
+        "category": "performance",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The report may process or retrieve too much data for a single request.",
+        "suggested_action": "Profile query time and response size for a one-year report."
+      },
+      "prediction": {
+        "category": "performance",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "report page",
+        "reproducible": "unknown",
+        "probable_cause": "Slow query execution due to large dataset size.",
+        "suggested_action": "Optimize query or increase server resources."
+      },
+      "exact_match": false,
+      "elapsed_ms": 8972,
+      "error": null
+    },
+    {
+      "group_id": "dashboard-cpu",
+      "input": "Every time we open the dashboard, CPU usage reaches 100% and the page becomes unresponsive.",
+      "expected": {
+        "category": "performance",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "Dashboard rendering or data processing may be consuming excessive CPU.",
+        "suggested_action": "Profile the dashboard during load and identify the highest-CPU operation."
+      },
+      "prediction": {
+        "category": "performance",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "dashboard",
+        "reproducible": true,
+        "probable_cause": "High CPU usage due to excessive resource consumption by the dashboard application.",
+        "suggested_action": "Review and optimize the dashboard's codebase for better resource management."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7747,
+      "error": null
+    },
+    {
+      "group_id": "minor-search-delay",
+      "input": "Search results are delayed by roughly one second, but the page remains usable.",
+      "expected": {
+        "category": "performance",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "Search processing may add a small response delay.",
+        "suggested_action": "Measure search request latency across representative queries."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "Search functionality might have been updated but the delay could be due to network latency.",
+        "suggested_action": "Check if there's any recent changes made to the search API or server-side code."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7323,
+      "error": null
+    },
+    {
+      "group_id": "blank-email-form",
+      "input": "Whenever I save the form with a blank email address, the app crashes instead of explaining the required field.",
+      "expected": {
+        "category": "validation",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The form may submit a blank email without client-side or server-side validation.",
+        "suggested_action": "Check required-email validation and handling of empty submissions."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "app",
+        "reproducible": true,
+        "probable_cause": "Form validation logic fails to handle empty email addresses.",
+        "suggested_action": "Review and update the validation rules to include empty email addresses."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7722,
+      "error": null
+    },
+    {
+      "group_id": "phone-validation",
+      "input": "The phone-number field accepts letters even though it says digits only.",
+      "expected": {
+        "category": "validation",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The phone-number validator may not enforce numeric input.",
+        "suggested_action": "Review phone-number validation against the field's documented format."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "Input validation logic incorrectly allows letters.",
+        "suggested_action": "Review and update input validation rules for the phone-number field."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6755,
+      "error": null
+    },
+    {
+      "group_id": "date-validation",
+      "input": "QA could not reproduce the date validation error on any of their test runs.",
+      "expected": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": false,
+        "probable_cause": "The date validation failure may depend on an unreported input or environment.",
+        "suggested_action": "Capture the exact date input and environment from the original failure."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": false,
+        "probable_cause": "Date format mismatch during input validation.",
+        "suggested_action": "Review input validation logic for date formats."
+      },
+      "exact_match": false,
+      "elapsed_ms": 4976,
+      "error": null
+    },
+    {
+      "group_id": "payment-timeout",
+      "input": "Whenever the payment provider responds with a timeout, our order remains marked pending even though the provider charged the customer.",
+      "expected": {
+        "category": "integration",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The timeout path may not reconcile the provider's completed charge with the order state.",
+        "suggested_action": "Compare provider transaction records with order-state updates for timed-out requests."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "Timeout handling logic incorrectly assumes all responses are successful.",
+        "suggested_action": "Review and update timeout handling logic to distinguish between successful and timed-out responses."
+      },
+      "exact_match": false,
+      "elapsed_ms": 5773,
+      "error": null
+    },
+    {
+      "group_id": "crm-sync",
+      "input": "The nightly export is missing newly created records because the downstream CRM sync stopped yesterday.",
+      "expected": {
+        "category": "integration",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The CRM synchronization may have stopped processing recent records.",
+        "suggested_action": "Check synchronization health and retry the missing-record export."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "Downstream CRM sync functionality has been disabled or updated.",
+        "suggested_action": "Review the CRM integration settings and ensure that the sync is enabled and functioning correctly."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6358,
+      "error": null
+    },
+    {
+      "group_id": "invoice-authorization",
+      "input": "An unauthenticated user can read another customer's private invoice by changing the invoice ID in the URL.",
+      "expected": {
+        "category": "security",
+        "severity": "critical",
+        "priority": "P1",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "Invoice access may not verify that the requester is authorized for the requested customer.",
+        "suggested_action": "Restrict invoice reads by authenticated customer ownership and review access logs."
+      },
+      "prediction": {
+        "category": "security",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "URL parameter injection vulnerability in the application.",
+        "suggested_action": "Implement input validation and sanitization for all URL parameters."
+      },
+      "exact_match": false,
+      "elapsed_ms": 7023,
+      "error": null
+    },
+    {
+      "group_id": "upload-rce",
+      "input": "Someone exploited a remote code execution flaw in the image upload endpoint and is running commands on the server.",
+      "expected": {
+        "category": "security",
+        "severity": "critical",
+        "priority": "P1",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The upload endpoint may execute attacker-controlled input.",
+        "suggested_action": "Isolate affected systems and investigate the exploited upload endpoint immediately."
+      },
+      "prediction": {
+        "category": "security",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "server",
+        "reproducible": "unknown",
+        "probable_cause": "Improper input validation leading to command injection.",
+        "suggested_action": "Update the image upload endpoint to sanitize all uploaded files."
+      },
+      "exact_match": false,
+      "elapsed_ms": 5633,
+      "error": null
+    },
+    {
+      "group_id": "staging-worker-config",
+      "input": "After every deployment to staging, the worker fails to start because its configuration file is missing.",
+      "expected": {
+        "category": "deployment",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "staging",
+        "reproducible": true,
+        "probable_cause": "The staging deployment may omit the worker configuration file.",
+        "suggested_action": "Compare staged deployment artifacts with the worker's required configuration."
+      },
+      "prediction": {
+        "category": "deployment",
+        "severity": "unknown",
+        "priority": "unknown",
+        "environment": "staging",
+        "reproducible": "unknown",
+        "probable_cause": "Configuration file was not properly deployed during the last deployment.",
+        "suggested_action": "Verify that the configuration file is included in the deployment package and ensure it is correctly uploaded."
+      },
+      "exact_match": false,
+      "elapsed_ms": 5792,
+      "error": null
+    },
+    {
+      "group_id": "production-blank-page",
+      "input": "The production release shows a blank page for every user and blocks the entire application.",
+      "expected": {
+        "category": "deployment",
+        "severity": "critical",
+        "priority": "P1",
+        "environment": "production",
+        "reproducible": "unknown",
+        "probable_cause": "The production release may contain a startup or asset-loading failure.",
+        "suggested_action": "Roll back or disable the release while checking production startup and asset errors."
+      },
+      "prediction": {
+        "category": "deployment",
+        "severity": "critical",
+        "priority": "P1",
+        "environment": "production",
+        "reproducible": "unknown",
+        "probable_cause": "Application server initialization fails.",
+        "suggested_action": "Review and debug the application startup process."
+      },
+      "exact_match": false,
+      "elapsed_ms": 4774,
+      "error": null
+    },
+    {
+      "group_id": "windows-runtime",
+      "input": "On Windows 11 with the latest runtime, the desktop app closes immediately after launch.",
+      "expected": {
+        "category": "compatibility",
+        "severity": "high",
+        "priority": "P2",
+        "environment": "Windows 11",
+        "reproducible": "unknown",
+        "probable_cause": "The application may be incompatible with the installed runtime on Windows 11.",
+        "suggested_action": "Capture startup logs and verify the supported runtime version on Windows 11."
+      },
+      "prediction": {
+        "category": "other",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "Windows 11",
+        "reproducible": "unknown",
+        "probable_cause": "Immediate closure upon launch could indicate a crash or initialization error.",
+        "suggested_action": "Check for any startup items or services that might be causing the application to close prematurely."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6607,
+      "error": null
+    },
+    {
+      "group_id": "iphone-landscape",
+      "input": "The page layout breaks on iPhone 15 when I rotate the screen to landscape.",
+      "expected": {
+        "category": "compatibility",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "iPhone 15",
+        "reproducible": "unknown",
+        "probable_cause": "The layout may not adapt to the device's landscape viewport.",
+        "suggested_action": "Inspect responsive layout behavior on iPhone 15 in landscape orientation."
+      },
+      "prediction": {
+        "category": "other",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "iPhone 15",
+        "reproducible": "unknown",
+        "probable_cause": "Screen rotation triggers unexpected layout changes.",
+        "suggested_action": "Test on different devices to confirm reproducibility."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6394,
+      "error": null
+    },
+    {
+      "group_id": "export-format-question",
+      "input": "The export file is named report.csv, but opening it shows rows separated by commas as expected.",
+      "expected": {
+        "category": "other",
+        "severity": "low",
+        "priority": "P4",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "The report may be functioning as designed despite the naming concern.",
+        "suggested_action": "Confirm the expected export format with the reporter before changing behavior."
+      },
+      "prediction": {
+        "category": "validation",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "unknown",
+        "reproducible": "unknown",
+        "probable_cause": "File naming convention mismatch between expectation and actual implementation.",
+        "suggested_action": "Review file naming conventions and ensure they match expectations."
+      },
+      "exact_match": false,
+      "elapsed_ms": 5947,
+      "error": null
+    },
+    {
+      "group_id": "help-link",
+      "input": "Whenever I click the help link, nothing happens and the same problem occurs in two browsers.",
+      "expected": {
+        "category": "other",
+        "severity": "medium",
+        "priority": "P3",
+        "environment": "unknown",
+        "reproducible": true,
+        "probable_cause": "The help link may not have a working destination or click handler.",
+        "suggested_action": "Inspect the help link target and browser console for click errors."
+      },
+      "prediction": {
+        "category": "other",
+        "severity": "low",
+        "priority": "unknown",
+        "environment": "two browsers",
+        "reproducible": true,
+        "probable_cause": "The help link might not have any action associated with it.",
+        "suggested_action": "Verify if there's any JavaScript event listener attached to the help link that could prevent its execution."
+      },
+      "exact_match": false,
+      "elapsed_ms": 6798,
+      "error": null
+    }
+  ]
+}
