@@ -1,0 +1,11 @@
+.venv/
+node_modules/
+dist/
+__pycache__/
+.pytest_cache/
+.env
+data/splits/
+models/
+outputs/
+*.py[cod]
+*.tsbuildinfo
