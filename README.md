@@ -16,7 +16,23 @@ Every analysis contains exactly these fields:
 | `probable_cause` | A cautious hypothesis or `unknown` |
 | `suggested_action` | One concise investigation step |
 
-The API validates every response against this schema. The UI keeps the JSON visible and asks reviewers to verify predictions before acting.
+The API validates every response against this schema. It also replaces environments
+not named in the report and unsupported reproducibility claims with `unknown`.
+Critical severity is retained only when the report contains critical-impact
+evidence; an explicit workaround downgrades an unsupported critical prediction to
+medium, otherwise severity and priority become `unknown`. The UI keeps the JSON
+visible and asks reviewers to verify predictions before acting.
+
+## Live inference screenshot
+
+![Bug2JSON playground showing a live base-model analysis](docs/screenshots/bug2json-live-inference.png)
+
+This screenshot was captured from a real local request to the base
+`Qwen/Qwen2.5-1.5B-Instruct` model. The displayed 4,373 ms is one request's
+observed latency, not a performance benchmark. No LoRA adapter has been trained
+and no reviewed held-out evaluation has been run, so accuracy and improvement
+figures are **not measured**. The example output is a demonstration, not evidence
+of model accuracy.
 
 ## Project layout
 

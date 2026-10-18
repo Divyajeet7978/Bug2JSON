@@ -11,6 +11,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 
 from app.prompt import SYSTEM_PROMPT, user_prompt
+from app.inference import ground_analysis
 from app.schemas import BugAnalysis
 
 FIELDS = (
@@ -94,7 +95,11 @@ def predict(model: Any, tokenizer: Any, report: str) -> tuple[dict[str, Any] | N
             pad_token_id=tokenizer.eos_token_id,
         )[0, tokens["input_ids"].shape[-1] :]
     text = tokenizer.decode(generated, skip_special_tokens=True)
-    return parse_prediction(text)
+    prediction, is_valid_json = parse_prediction(text)
+    if prediction is None:
+        return None, is_valid_json
+    grounded = ground_analysis(BugAnalysis.model_validate(prediction), report)
+    return grounded.model_dump(), is_valid_json
 
 
 def _macro_f1(expected: list[str], predicted: list[str]) -> float:

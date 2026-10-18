@@ -20,7 +20,6 @@ import {
   ShieldCheck,
   Sparkles,
   TriangleAlert,
-  UserRound,
   Zap,
 } from "lucide-react";
 
@@ -178,6 +177,7 @@ function App() {
   const [elapsedMs, setElapsedMs] = useState<number | null>(null);
   const [showExamples, setShowExamples] = useState(false);
   const [copyError, setCopyError] = useState("");
+  const [exportFeedback, setExportFeedback] = useState("");
   const requestController = useRef<AbortController | null>(null);
 
   const json = useMemo(
@@ -224,6 +224,7 @@ function App() {
     setError("");
     setElapsedMs(null);
     setCopyError("");
+    setExportFeedback("");
   }
 
   useEffect(() => {
@@ -286,6 +287,7 @@ function App() {
   async function copyJson() {
     if (!json) return;
     setCopyError("");
+    setExportFeedback("");
     try {
       await navigator.clipboard.writeText(json);
       setCopied(true);
@@ -297,12 +299,31 @@ function App() {
 
   function downloadJson() {
     if (!json) return;
-    const objectUrl = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+    setCopyError("");
+    setExportFeedback("");
+    let objectUrl: string | null = null;
     const link = document.createElement("a");
-    link.href = objectUrl;
-    link.download = "bug-report.json";
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    try {
+      objectUrl = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      link.href = objectUrl;
+      link.download = "bug-report.json";
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      setExportFeedback("Download requested: bug-report.json");
+      window.setTimeout(() => {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+      }, 1000);
+    } catch (reason) {
+      setCopyError(
+        reason instanceof Error
+          ? `Export failed: ${reason.message}`
+          : "Export failed. Copy the JSON from the output panel instead.",
+      );
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    } finally {
+      link.remove();
+    }
   }
 
   function chooseExample(exampleReport: string) {
@@ -366,7 +387,7 @@ function App() {
           </div>
           <div className="runtime-track"><span className={serviceOnline ? "online-track" : ""} /></div>
           <button className="preferences-link" onClick={() => setPage("pipeline")}>
-            <span>Preferences</span><Settings2 size={14} />
+            <span>Runtime status</span><Activity size={14} />
           </button>
         </div>
       </aside>
@@ -402,7 +423,6 @@ function App() {
             <button className="top-icon" aria-label="Pipeline monitor" onClick={() => setPage("pipeline")}>
               <Settings2 size={16} />
             </button>
-            <button className="avatar" aria-label="User profile"><UserRound size={16} /></button>
           </div>
         </header>
 
@@ -505,8 +525,24 @@ function App() {
                     {analysis && <span className="valid-badge"><ShieldCheck size={11} /> Valid schema</span>}
                   </div>
                   <div className="segmented-tabs">
-                    <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>Overview</button>
-                    <button className={activeTab === "json" ? "active" : ""} onClick={() => setActiveTab("json")}>JSON</button>
+                    <button
+                      className={activeTab === "overview" ? "active" : ""}
+                      onClick={() => setActiveTab("overview")}
+                      disabled={!analysis}
+                      aria-pressed={activeTab === "overview"}
+                      title={!analysis ? "Generate an output to view it here." : undefined}
+                    >
+                      Overview
+                    </button>
+                    <button
+                      className={activeTab === "json" ? "active" : ""}
+                      onClick={() => setActiveTab("json")}
+                      disabled={!analysis}
+                      aria-pressed={activeTab === "json"}
+                      title={!analysis ? "Generate an output to view it here." : undefined}
+                    >
+                      JSON
+                    </button>
                   </div>
                 </div>
 
@@ -540,6 +576,7 @@ function App() {
                       </div>
                     </div>
                     {copyError && <div className="action-feedback" role="status">{copyError}</div>}
+                    {exportFeedback && <div className="action-feedback" role="status">{exportFeedback}</div>}
                     <pre>{json}</pre>
                   </div>
                 ) : (
@@ -570,7 +607,7 @@ function App() {
                     </div>
                     {copyError && <div className="action-feedback" role="status">{copyError}</div>}
                     <div className="result-bottom">
-                      <span><span className="green-dot" /> Schema validated · predictions require review</span>
+                      <span><span className="green-dot" /> Schema validated · evidence checks applied · review predictions</span>
                       <span>Latency: {elapsedMs === null ? "—" : `${elapsedMs} ms`}</span>
                     </div>
                   </>

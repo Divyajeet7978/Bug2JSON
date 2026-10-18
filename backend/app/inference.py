@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from threading import Lock
 from time import perf_counter
@@ -29,6 +30,72 @@ def parse_analysis(text: str) -> BugAnalysis:
         except (json.JSONDecodeError, ValueError):
             continue
     raise ModelOutputError("The model did not return valid Bug2JSON output.")
+
+
+def ground_analysis(analysis: BugAnalysis, report: str) -> BugAnalysis:
+    normalized_report = report.casefold()
+    updates: dict[str, Any] = {}
+
+    environment = analysis.environment
+    if environment != "unknown" and environment.casefold() not in normalized_report:
+        updates["environment"] = "unknown"
+
+    negative_reproducibility = re.search(
+        r"\b(?:cannot|can't|could not|couldn't|unable to|not able to)\s+reproduce\b"
+        r"|\bnot reproducible\b",
+        normalized_report,
+    )
+    positive_reproducibility = re.search(
+        r"\b(?:whenever|every time|each time|always|consistently|repeatedly|"
+        r"every attempt|on every attempt|can reproduce|reproducible)\b",
+        normalized_report,
+    )
+    if negative_reproducibility and not positive_reproducibility:
+        updates["reproducible"] = False
+    elif positive_reproducibility and not negative_reproducibility:
+        updates["reproducible"] = True
+    else:
+        updates["reproducible"] = "unknown"
+
+    critical_terms = (
+        r"all users|every user|widespread|company[- ]wide|organization[- ]wide|"
+        r"entire (?:service|system|platform)|service[- ]wide|data loss|"
+        r"data breach|exploitable|actively exploited"
+    )
+    critical_evidence = re.search(
+        rf"\b(?:{critical_terms})\b",
+        normalized_report,
+    )
+    denied_critical_evidence = re.search(
+        rf"\b(?:not|no|without|never)\b[^.!?]{{0,50}}\b(?:{critical_terms})\b",
+        normalized_report,
+    )
+    if denied_critical_evidence:
+        critical_evidence = None
+    if analysis.severity == "critical" and not critical_evidence:
+        workaround_evidence = re.search(
+            r"\b(?:refresh(?:ing|ed)?|reload(?:ing|ed)?|restart(?:ing|ed)?|workaround)\b"
+            r"[^.!?]{0,100}\b(?:temporar(?:y|ily)|fix(?:es|ed)?|resolv(?:es|ed)?|"
+            r"work(?:s|ed)?)\b"
+            r"|\bworkaround (?:is|exists|available)\b",
+            normalized_report,
+        )
+        denied_workaround = re.search(
+            r"\b(?:not|never|doesn't|does not|didn't|did not|cannot|can't|"
+            r"failed to|fails to)\b[^.!?]{0,60}\b(?:fix|resolve|clear|help|work)\w*\b",
+            normalized_report,
+        )
+        if denied_workaround:
+            workaround_evidence = None
+        if workaround_evidence:
+            updates["severity"] = "medium"
+            if analysis.priority == "P1":
+                updates["priority"] = "P2"
+        else:
+            updates["severity"] = "unknown"
+            updates["priority"] = "unknown"
+
+    return analysis.model_copy(update=updates) if updates else analysis
 
 
 class Analyzer:
@@ -82,7 +149,7 @@ class Analyzer:
                 )
             generated = output[0, inputs["input_ids"].shape[-1] :]
             decoded = self._tokenizer.decode(generated, skip_special_tokens=True)
-            result = parse_analysis(decoded)
+            result = ground_analysis(parse_analysis(decoded), report)
 
         return result, self.base_model, round((perf_counter() - started) * 1000)
 
